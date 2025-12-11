@@ -4,7 +4,6 @@ class HelpCenter::ArticlesController < HelpCenter::BaseController
   before_action :redirect_legacy_articles, only: :show
 
   def index
-    # SPA - React Router handles all sub-routes
     @props = {
       categories: HelpCenter::Category.all.map do |category|
         {

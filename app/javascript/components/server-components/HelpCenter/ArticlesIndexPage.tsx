@@ -1,14 +1,13 @@
-// import cx from "classnames";
 import * as React from "react";
+import { Link } from "react-router-dom";
 import { createCast } from "ts-safe-cast";
 
 import { register } from "$app/utils/serverComponentUtil";
 
-import { NavigationButton } from "$app/components/Button";
-
 interface Article {
   title: string;
   url: string;
+  slug: string;
 }
 
 interface Category {
@@ -16,6 +15,7 @@ interface Category {
   title: string;
   audience: string;
   articles: Article[];
+  slug: string;
 }
 
 interface ArticlesIndexPageProps {
@@ -50,14 +50,13 @@ const CategoryArticles = ({ category, searchTerm }: { category: Category; search
         style={{ display: "grid", gridAutoRows: "160px" }}
       >
         {category.articles.map((article) => (
-          <NavigationButton
-            key={article.url}
-            href={article.url}
-            color="filled"
-            className="box-border! flex! h-full! w-full! items-center! justify-center! p-12! text-center text-xl!"
+          <Link
+            key={article.slug}
+            to={`/help/article/${article.slug}`}
+            className="button filled box-border! flex! h-full! w-full! items-center! justify-center! p-12! text-center text-xl!"
           >
             {renderHighlightedText(article.title, searchTerm)}
-          </NavigationButton>
+          </Link>
         ))}
       </div>
     </div>

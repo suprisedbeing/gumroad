@@ -4,16 +4,19 @@ class HelpCenter::ArticlesController < HelpCenter::BaseController
   before_action :redirect_legacy_articles, only: :show
 
   def index
+    # SPA - React Router handles all sub-routes
     @props = {
       categories: HelpCenter::Category.all.map do |category|
         {
           title: category.title,
-          url: help_center_category_path(category),
+          slug: category.slug,
+          url: "/help/category/#{category.slug}",
           audience: category.audience,
           articles: category.articles.map do |article|
             {
               title: article.title,
-              url: help_center_article_path(article)
+              slug: article.slug,
+              url: "/help/article/#{article.slug}"
             }
           end
         }
@@ -21,7 +24,7 @@ class HelpCenter::ArticlesController < HelpCenter::BaseController
     }
 
     @title = "Gumroad Help Center"
-    @canonical_url = help_center_root_url
+    @canonical_url = "#{request.base_url}/help"
     @description = "Common questions and support documentation"
   end
 

@@ -293,7 +293,12 @@ Rails.application.routes.draw do
     end
 
     namespace :help_center, path: "help" do
-      get "(*other)", to: "articles#index", as: :root
+      root to: "articles#index"
+
+      resources :articles, only: [:index, :show], param: :slug, path: "article"
+      resources :categories, only: [:show], param: :slug, path: "category"
+
+      get "(*other)", to: "articles#index"
     end
 
     get "/ifttt/v1/status" => "api/v2/users#ifttt_status"

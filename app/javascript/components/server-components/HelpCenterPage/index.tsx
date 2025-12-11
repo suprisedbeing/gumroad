@@ -1,24 +1,23 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
 import { createCast } from "ts-safe-cast";
 
 import { register } from "$app/utils/serverComponentUtil";
 
 interface Article {
   title: string;
-  url: string;
   slug: string;
+  url: string;
 }
 
 interface Category {
-  url: string;
   title: string;
+  slug: string;
+  url: string;
   audience: string;
   articles: Article[];
-  slug: string;
 }
 
-interface ArticlesIndexPageProps {
+interface HelpCenterPageProps {
   categories: Category[];
 }
 
@@ -50,20 +49,20 @@ const CategoryArticles = ({ category, searchTerm }: { category: Category; search
         style={{ display: "grid", gridAutoRows: "160px" }}
       >
         {category.articles.map((article) => (
-          <Link
+          <a
             key={article.slug}
-            to={`/help/article/${article.slug}`}
+            href={`/help/article/${article.slug}`}
             className="button filled box-border! flex! h-full! w-full! items-center! justify-center! p-12! text-center text-xl!"
           >
             {renderHighlightedText(article.title, searchTerm)}
-          </Link>
+          </a>
         ))}
       </div>
     </div>
   );
 };
 
-const ArticlesIndexPage = ({ categories }: ArticlesIndexPageProps) => {
+const HelpCenterPage = ({ categories }: HelpCenterPageProps) => {
   const [searchTerm, setSearchTerm] = React.useState("");
 
   const filteredCategories = searchTerm
@@ -85,11 +84,13 @@ const ArticlesIndexPage = ({ categories }: ArticlesIndexPageProps) => {
       />
       <div className="mt-12 space-y-12">
         {filteredCategories.map((category) => (
-          <CategoryArticles key={category.url} category={category} searchTerm={searchTerm} />
+          <CategoryArticles key={category.slug} category={category} searchTerm={searchTerm} />
         ))}
       </div>
     </>
   );
 };
 
-export default register({ component: ArticlesIndexPage, propParser: createCast() });
+export default register({ component: HelpCenterPage, propParser: createCast() });
+
+

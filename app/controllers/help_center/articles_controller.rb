@@ -3,12 +3,13 @@
 class HelpCenter::ArticlesController < HelpCenter::BaseController
   before_action :redirect_legacy_articles, only: :show
 
-  layout "inertia", only: [:index, :show]
+  layout "inertia"
 
   def index
     render inertia: "HelpCenter/Articles/Index",
            props: {
-             categories: HelpCenter::Category.all.map { |category| category_props(category) }
+             categories: HelpCenter::Category.all.map { |category| category_props(category) },
+             recaptcha_site_key: user_signed_in? ? nil : GlobalConfig.get("RECAPTCHA_LOGIN_SITE_KEY")
            }
 
     @title = "Gumroad Help Center"
@@ -22,7 +23,8 @@ class HelpCenter::ArticlesController < HelpCenter::BaseController
     render inertia: "HelpCenter/Articles/Show",
            props: {
              article: article_props(@article),
-             related_categories: @article.category.categories_for_same_audience.map { |c| category_props(c) }
+             related_categories: @article.category.categories_for_same_audience.map { |c| category_props(c) },
+             recaptcha_site_key: user_signed_in? ? nil : GlobalConfig.get("RECAPTCHA_LOGIN_SITE_KEY")
            }
 
     @title = "#{@article.title} - Gumroad Help Center"

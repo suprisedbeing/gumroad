@@ -1,6 +1,9 @@
 import { Link } from "@inertiajs/react";
 import * as React from "react";
 
+import { Icon } from "$app/components/Icons";
+import { PageHeader } from "$app/components/ui/PageHeader";
+
 interface Article {
   title: string;
   slug: string;
@@ -22,12 +25,21 @@ interface CategoryShowProps {
 
 export default function CategoryShow({ category, related_categories }: CategoryShowProps) {
   return (
-    <div className="p-4 md:p-8">
-      <div className="mb-8">
-        <Link href="/help" className="button">
-          ← Back to Help Center
-        </Link>
-      </div>
+    <>
+      <PageHeader
+        title="Help Center"
+        actions={
+          <Link href="/help" className="button" aria-label="Search" title="Search">
+            <Icon name="solid-search" />
+          </Link>
+        }
+      />
+      <div className="p-4 md:p-8">
+        <div className="mb-8">
+          <Link href="/help" className="button">
+            ← Back to Help Center
+          </Link>
+        </div>
 
       <h1 className="mb-8 text-3xl font-bold">{category.title}</h1>
 
@@ -55,6 +67,7 @@ export default function CategoryShow({ category, related_categories }: CategoryS
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }

@@ -6,24 +6,12 @@ class HelpCenter::ArticlesController < HelpCenter::BaseController
   layout "inertia", only: [:index, :show]
 
   def index
-    @props = {
-      categories: HelpCenter::Category.all.map do |category|
-        {
-          title: category.title,
-          url: help_center_category_path(category),
-          audience: category.audience,
-          articles: category.articles.map do |article|
-            {
-              title: article.title,
-              url: help_center_article_path(article)
-            }
-          end
-        }
-      end
-    }
+    render inertia: "HelpCenter/Articles/Index",
+           props: {
+             categories: HelpCenter::Category.all.map { |category| category_props(category) }
+           }
 
     @title = "Gumroad Help Center"
-    @canonical_url = help_center_root_url
     @canonical_url = help_center_root_url
     @description = "Common questions and support documentation"
   end

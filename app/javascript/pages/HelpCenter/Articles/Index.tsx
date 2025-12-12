@@ -72,6 +72,7 @@ export default function ArticlesIndex({ categories }: ArticlesIndexProps) {
 
   return (
     <section className="p-4 md:p-8">
+      <h1 className="mb-8 text-2xl">Help Center</h1>
       <input
         type="text"
         autoFocus

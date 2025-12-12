@@ -145,6 +145,7 @@ export const Nav = (props: Props) => {
         ) : null}
       </NavSection>
       <NavSection>
+        <ClientNavLink text="Help" icon="info-circle" href={Routes.help_center_root_url(routeParams)} />
         <NavLink text="Discover" icon="solid-search" href={discoverUrl} exactHrefMatch />
         {currentSeller?.id === loggedInUser?.id ? (
           <NavLink

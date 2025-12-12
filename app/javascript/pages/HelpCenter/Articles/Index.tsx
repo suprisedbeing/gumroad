@@ -1,5 +1,6 @@
 import { Link } from "@inertiajs/react";
 import * as React from "react";
+import { PageHeader } from "$app/components/ui/PageHeader";
 
 interface Article {
   title: string;
@@ -71,9 +72,10 @@ export default function ArticlesIndex({ categories }: ArticlesIndexProps) {
     : categories;
 
   return (
-    <section className="p-4 md:p-8">
-      <h1 className="mb-8 text-2xl">Help Center</h1>
-      <input
+    <>
+      <PageHeader title="Help Center" />
+      <section className="p-4 md:p-8">
+        <input
         type="text"
         autoFocus
         value={searchTerm}
@@ -86,6 +88,7 @@ export default function ArticlesIndex({ categories }: ArticlesIndexProps) {
           <CategoryArticles key={category.slug} category={category} searchTerm={searchTerm} />
         ))}
       </div>
-    </section>
+      </section>
+    </>
   );
 }

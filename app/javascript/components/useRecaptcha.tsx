@@ -39,18 +39,48 @@ export function useRecaptcha({ siteKey }: { siteKey: string | null }) {
 
   React.useEffect(() => {
     if (!siteKey) return;
-    grecaptcha.enterprise.ready(() => {
-      if (!containerRef.current || containerRef.current.childElementCount) return;
-      recaptchaId.current = grecaptcha.enterprise.render(containerRef.current, {
-        sitekey: siteKey,
-        callback: (response) => {
-          resolveRef.current?.(response);
-          resolveRef.current = null;
-        },
-        size: "invisible",
+
+    const loadRecaptcha = () => {
+      if (typeof grecaptcha !== "undefined") {
+        return Promise.resolve();
+      }
+
+      if (document.getElementById("recaptcha-script")) {
+        return new Promise<void>((resolve) => {
+          const checkInterval = setInterval(() => {
+            if (typeof grecaptcha !== "undefined") {
+              clearInterval(checkInterval);
+              resolve();
+            }
+          }, 100);
+        });
+      }
+
+      return new Promise<void>((resolve) => {
+        const script = document.createElement("script");
+        script.id = "recaptcha-script";
+        script.src = "https://www.google.com/recaptcha/enterprise.js?render=explicit";
+        script.async = true;
+        script.defer = true;
+        script.onload = () => resolve();
+        document.body.appendChild(script);
+      });
+    };
+
+    void loadRecaptcha().then(() => {
+      grecaptcha.enterprise.ready(() => {
+        if (!containerRef.current || containerRef.current.childElementCount) return;
+        recaptchaId.current = grecaptcha.enterprise.render(containerRef.current, {
+          sitekey: siteKey,
+          callback: (response) => {
+            resolveRef.current?.(response);
+            resolveRef.current = null;
+          },
+          size: "invisible",
+        });
       });
     });
-  }, [containerRef]);
+  }, [containerRef, siteKey]);
 
   const execute = () => {
     const widgetId = recaptchaId.current;

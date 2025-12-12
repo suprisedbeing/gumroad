@@ -297,8 +297,10 @@ Rails.application.routes.draw do
 
       # Custom singular `path` name for backwards compatibility with old routes
       # for SEO.
-      resources :articles, only: [:index, :show], param: :slug, path: "article"
+      resources :articles, only: [:show], param: :slug, path: "article"
       resources :categories, only: [:show], param: :slug, path: "category"
+
+      get "(*other)", to: "articles#index"
     end
 
     get "/ifttt/v1/status" => "api/v2/users#ifttt_status"

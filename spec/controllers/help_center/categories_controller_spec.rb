@@ -1,13 +1,23 @@
 # frozen_string_literal: true
 
 require "spec_helper"
+require "inertia_rails/rspec"
 
-describe HelpCenter::CategoriesController do
+describe HelpCenter::CategoriesController, type: :controller, inertia: true do
   describe "GET show" do
     let(:category) { HelpCenter::Category.first }
 
     context "render views" do
       render_views
+
+      it "renders the Inertia component" do
+        get :show, params: { slug: category.slug }
+
+        expect(response).to have_http_status(:ok)
+        expect(inertia).to render_component("HelpCenter/Categories/Show")
+        expect(inertia.props[:category][:title]).to eq(category.title)
+        expect(inertia.props[:related_categories]).to be_present
+      end
 
       it "lists the category's articles and other categories for the same audience" do
         get :show, params: { slug: category.slug }

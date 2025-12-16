@@ -1,22 +1,30 @@
 # frozen_string_literal: true
 
 require "spec_helper"
+require "inertia_rails/rspec"
 
-describe HelpCenter::ArticlesController do
+describe HelpCenter::ArticlesController, type: :controller, inertia: true do
   describe "GET index" do
-    it "returns http success" do
+    it "renders the Inertia component" do
       get :index
 
       expect(response).to have_http_status(:ok)
+      expect(inertia).to render_component("HelpCenter/Articles/Index")
+      expect(inertia.props[:categories]).to be_present
+      expect(inertia.props[:recaptcha_site_key]).to be_nil # User is not signed in by default in specs? Wait, let's check context.
     end
   end
 
   describe "GET show" do
     let(:article) { HelpCenter::Article.find(43) }
 
-    it "returns http success" do
+    it "renders the Inertia component" do
+      allow(controller).to receive(:render_to_string).and_return("<h1>Content</h1>")
       get :show, params: { slug: article.slug }
       expect(response).to have_http_status(:ok)
+      expect(inertia).to render_component("HelpCenter/Articles/Show")
+      expect(inertia.props[:article][:title]).to eq(article.title)
+      expect(inertia.props[:article][:content_html]).to eq("<h1>Content</h1>")
     end
 
     context "render views" do

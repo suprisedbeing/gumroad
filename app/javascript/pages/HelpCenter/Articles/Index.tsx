@@ -5,23 +5,16 @@ import { Button, NavigationButton } from "$app/components/Button";
 import { UnauthenticatedNewTicketModal } from "$app/components/support/UnauthenticatedNewTicketModal";
 import { PageHeader } from "$app/components/ui/PageHeader";
 
-interface Article {
-  title: string;
-  slug: string;
-  url: string;
-}
-
-interface Category {
-  title: string;
-  slug: string;
-  url: string;
-  audience: string;
-  articles: Article[];
-}
+import { Category } from "../types";
 
 interface ArticlesIndexProps {
   categories: Category[];
   recaptcha_site_key?: string | null;
+}
+
+interface PageProps extends ArticlesIndexProps {
+  current_user: { [key: string]: any } | null;
+  [key: string]: unknown;
 }
 
 const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
@@ -66,8 +59,7 @@ const CategoryArticles = ({ category, searchTerm }: { category: Category; search
 };
 
 export default function ArticlesIndex({ categories, recaptcha_site_key }: ArticlesIndexProps) {
-  const { current_user } = usePage().props;
-  console.log("ArticlesIndex props:", { current_user, recaptcha_site_key });
+  const { current_user } = usePage<PageProps>().props;
   const [searchTerm, setSearchTerm] = React.useState("");
   const [isUnauthenticatedNewTicketOpen, setIsUnauthenticatedNewTicketOpen] = React.useState(false);
 
@@ -113,9 +105,9 @@ export default function ArticlesIndex({ categories, recaptcha_site_key }: Articl
                 Contact support
               </Button>
             ) : (
-              <Button color="accent" onClick={() => (window.location.href = "/support?new_ticket=true")}>
+              <NavigationButton color="accent" href="/support?new_ticket=true">
                 New ticket
-              </Button>
+              </NavigationButton>
             )}
           </>
         }

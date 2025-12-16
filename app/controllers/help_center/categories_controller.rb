@@ -14,19 +14,5 @@ class HelpCenter::CategoriesController < HelpCenter::BaseController
   end
 
   private
-    def category_props(category)
-      {
-        title: category.title,
-        slug: category.slug,
-        url: help_center_category_path(category),
-        audience: category.audience,
-        articles: category.articles.map do |article|
-          {
-            title: article.title,
-            slug: article.slug,
-            url: help_center_article_path(article)
-          }
-        end
-      }
-    end
+
 end

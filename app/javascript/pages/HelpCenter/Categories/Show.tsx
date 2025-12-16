@@ -4,19 +4,7 @@ import * as React from "react";
 import { Icon } from "$app/components/Icons";
 import { PageHeader } from "$app/components/ui/PageHeader";
 
-interface Article {
-  title: string;
-  slug: string;
-  url: string;
-}
-
-interface Category {
-  title: string;
-  slug: string;
-  url: string;
-  audience: string;
-  articles: Article[];
-}
+import { Category } from "../types";
 
 interface CategoryShowProps {
   category: Category;

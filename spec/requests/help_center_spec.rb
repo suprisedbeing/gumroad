@@ -71,7 +71,7 @@ describe "Help Center", type: :system, js: true do
     it "shows the new ticket button and report a bug link" do
       visit "/help"
 
-      expect(page).to have_button("New ticket")
+      expect(page).to have_link("New ticket")
       expect(page).to have_link("Report a bug", href: "https://github.com/antiwork/gumroad/issues/new")
     end
   end

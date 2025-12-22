@@ -148,7 +148,7 @@ export const Nav = (props: Props) => {
         <ClientNavLink text="Help" icon="info-circle" href={Routes.help_center_root_url(routeParams)} />
         <NavLink text="Discover" icon="solid-search" href={discoverUrl} exactHrefMatch />
         {currentSeller?.id === loggedInUser?.id ? (
-          <NavLink
+          <ClientNavLink
             text="Library"
             icon="bookmark-heart-fill"
             href={Routes.library_url(routeParams)}

@@ -154,10 +154,21 @@ module CheckoutHelpers
       click_on is_free ? "Get" : "Pay", exact: true
 
       if should_verify_address
-        if page.has_text?("We are unable to verify your shipping address. Is your address correct?", wait: 5)
+        # Wait a moment for the page to potentially show address verification modal
+        # This gives the browser time to process the payment form submission
+        begin
+          # Check for the first type of address verification modal
+          page.find(:xpath, "//*[contains(text(), 'We are unable to verify your shipping address')]", wait: 10)
           click_on "Yes, it is"
-        elsif page.has_text?("You entered this address:", wait: 5) && page.has_text?("We recommend using this format:", wait: 5)
-          click_on "No, continue"
+        rescue Capybara::ElementNotFound
+          # If the first modal isn't present, check for the alternative format modal
+          begin
+            page.find(:xpath, "//*[contains(text(), 'You entered this address:')]", wait: 3)
+            page.find(:xpath, "//*[contains(text(), 'We recommend using this format:')]", wait: 3)
+            click_on "No, continue"
+          rescue Capybara::ElementNotFound
+            # No address verification modal appeared, which is fine - continue with the test
+          end
         end
       end
 

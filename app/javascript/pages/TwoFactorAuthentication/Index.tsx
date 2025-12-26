@@ -16,7 +16,11 @@ interface TwoFactorAuthenticationProps {
   token: string | null;
 }
 
-export default function TwoFactorAuthenticationIndex({ user_id, email, token: initialToken }: TwoFactorAuthenticationProps) {
+export default function TwoFactorAuthenticationIndex({
+  user_id,
+  email,
+  token: initialToken,
+}: TwoFactorAuthenticationProps) {
   const uid = React.useId();
   const [token, setToken] = React.useState(initialToken ?? "");
   const [loginState, setLoginState] = React.useState<SaveState>({ type: "initial" });
@@ -39,7 +43,7 @@ export default function TwoFactorAuthenticationIndex({ user_id, email, token: in
           // If there's no error, Inertia will handle the redirect automatically
           // based on the redirect_location from the controller
         },
-      }
+      },
     );
   };
 

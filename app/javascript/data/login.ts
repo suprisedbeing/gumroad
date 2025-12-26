@@ -44,7 +44,6 @@ export const renewPassword = async (email: string) => {
   }
 };
 
-
 export const resendTwoFactorToken = async (userId: string) => {
   const response = await request({
     method: "POST",

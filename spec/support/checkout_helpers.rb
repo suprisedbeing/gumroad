@@ -153,24 +153,7 @@ module CheckoutHelpers
     expect do
       click_on is_free ? "Get" : "Pay", exact: true
 
-      if should_verify_address
-        # Wait a moment for the page to potentially show address verification modal
-        # This gives the browser time to process the payment form submission
-        begin
-          # Check for the first type of address verification modal
-          page.find(:xpath, "//*[contains(text(), 'We are unable to verify your shipping address')]", wait: 10)
-          click_on "Yes, it is"
-        rescue Capybara::ElementNotFound
-          # If the first modal isn't present, check for the alternative format modal
-          begin
-            page.find(:xpath, "//*[contains(text(), 'You entered this address:')]", wait: 3)
-            page.find(:xpath, "//*[contains(text(), 'We recommend using this format:')]", wait: 3)
-            click_on "No, continue"
-          rescue Capybara::ElementNotFound
-            # No address verification modal appeared, which is fine - continue with the test
-          end
-        end
-      end
+      handle_address_verification if should_verify_address
 
       within_sca_frame { click_on sca ? "Complete" : "Fail" } unless sca.nil?
 
@@ -245,4 +228,18 @@ private
 
   def variant_label(product)
     VARIANT_LABELS[product.native_type] || "Version"
+  end
+
+  def handle_address_verification
+    begin
+      page.find(:xpath, "//*[contains(text(), 'We are unable to verify your shipping address')]", wait: 10)
+      click_on "Yes, it is"
+    rescue Capybara::ElementNotFound
+      begin
+        page.find(:xpath, "//*[contains(text(), 'You entered this address:')]", wait: 3)
+        page.find(:xpath, "//*[contains(text(), 'We recommend using this format:')]", wait: 3)
+        click_on "No, continue"
+      rescue Capybara::ElementNotFound
+      end
+    end
   end

@@ -1,27 +1,22 @@
+import { router } from "@inertiajs/react";
 import * as React from "react";
-import { createCast } from "ts-safe-cast";
 
-import { resendTwoFactorToken, twoFactorLogin } from "$app/data/login";
+import { resendTwoFactorToken } from "$app/data/login";
 import { assertResponseError } from "$app/utils/request";
-import { register } from "$app/utils/serverComponentUtil";
 
 import { Layout } from "$app/components/Authentication/Layout";
 import { Button } from "$app/components/Button";
 import { showAlert } from "$app/components/server-components/Alert";
-import { useOriginalLocation } from "$app/components/useOriginalLocation";
 
 type SaveState = { type: "initial" | "submitting" } | { type: "error"; message: string };
 
-export const TwoFactorAuthenticationPage = ({
-  user_id,
-  email,
-  token: initialToken,
-}: {
+interface TwoFactorAuthenticationProps {
   user_id: string;
   email: string;
   token: string | null;
-}) => {
-  const next = new URL(useOriginalLocation()).searchParams.get("next");
+}
+
+export default function TwoFactorAuthenticationIndex({ user_id, email, token: initialToken }: TwoFactorAuthenticationProps) {
   const uid = React.useId();
   const [token, setToken] = React.useState(initialToken ?? "");
   const [loginState, setLoginState] = React.useState<SaveState>({ type: "initial" });
@@ -30,13 +25,22 @@ export const TwoFactorAuthenticationPage = ({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoginState({ type: "submitting" });
-    try {
-      const { redirectLocation } = await twoFactorLogin({ user_id, token, next });
-      window.location.href = redirectLocation;
-    } catch (e) {
-      assertResponseError(e);
-      setLoginState({ type: "error", message: e.message });
-    }
+
+    router.post(
+      "/two-factor",
+      { token, user_id },
+      {
+        preserveScroll: true,
+        onError: (errors) => {
+          const errorMessage = errors.error_message || "Invalid token, please try again.";
+          setLoginState({ type: "error", message: errorMessage });
+        },
+        onFinish: () => {
+          // If there's no error, Inertia will handle the redirect automatically
+          // based on the redirect_location from the controller
+        },
+      }
+    );
   };
 
   const resendToken = async () => {
@@ -85,6 +89,4 @@ export const TwoFactorAuthenticationPage = ({
       </form>
     </Layout>
   );
-};
-
-export default register({ component: TwoFactorAuthenticationPage, propParser: createCast() });
+}

@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
 require "spec_helper"
+require "inertia_rails/rspec"
 require "shared_examples/merge_guest_cart_with_user_cart"
 
-describe TwoFactorAuthenticationController do
+describe TwoFactorAuthenticationController, inertia: true do
   render_views
   include UsersHelper
 
   before do
+    Mime::Type.register "text/html", :inertia unless Mime::Type.lookup_by_extension(:inertia)
     @user = create(:user, two_factor_authentication_enabled: true)
   end
 
@@ -132,17 +134,13 @@ describe TwoFactorAuthenticationController do
       controller.prepare_for_two_factor_authentication(@user)
     end
 
-    it "renders HTTP success" do
+    it "renders the Inertia component" do
       get :new
 
       expect(response).to be_successful
-      expect(response).to render_template(:new)
-    end
-
-    it "sets @user" do
-      get :new
-
-      expect(assigns[:user]).to eq @user
+      expect(inertia).to render_component("TwoFactorAuthentication/Index")
+      expect(inertia.props[:user_id]).to eq @user.encrypted_external_id
+      expect(inertia.props[:email]).to eq @user.email
     end
   end
 

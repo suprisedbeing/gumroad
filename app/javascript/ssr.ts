@@ -84,7 +84,6 @@ import SubscriptionManager from "$app/components/server-components/SubscriptionM
 import SubscriptionManagerMagicLink from "$app/components/server-components/SubscriptionManagerMagicLink";
 import SupportHeader from "$app/components/server-components/support/Header";
 import TaxesCollectionModal from "$app/components/server-components/TaxesCollectionModal";
-import TwoFactorAuthenticationPage from "$app/components/server-components/TwoFactorAuthenticationPage";
 import UtmLinksPage from "$app/components/server-components/UtmLinksPage";
 import VideoStreamPlayer from "$app/components/server-components/VideoStreamPlayer";
 import WishlistPage from "$app/components/server-components/WishlistPage";
@@ -175,7 +174,6 @@ ReactOnRails.register({
   TaxesCollectionModal,
   TeamSettingsPage,
   ThirdPartyAnalyticsSettingsPage,
-  TwoFactorAuthenticationPage,
   VideoStreamPlayer,
   WishlistPage,
   WishlistsFollowingPage,

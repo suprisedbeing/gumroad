@@ -7,9 +7,16 @@ class TwoFactorAuthenticationController < ApplicationController
   before_action :redirect_to_login_path, only: :verify, if: -> { @user.blank? }
   before_action :validate_user_id_from_params, except: :new
 
+  layout "inertia"
+
   # Get /two-factor
   def new
-    @hide_layouts = true
+    render inertia: "TwoFactorAuthentication/Index",
+           props: {
+             user_id: @user.encrypted_external_id,
+             email: @user.email,
+             token: (User::DEFAULT_AUTH_TOKEN unless Rails.env.production?)
+           }
   end
 
   # POST /two-factor.json
@@ -38,18 +45,29 @@ class TwoFactorAuthenticationController < ApplicationController
         sign_in_with_two_factor_authentication(@user)
 
         flash[:notice] = "Successfully logged in!"
+        redirect_location = login_path_for(@user)
 
-        respond_to do |format|
-          format.html { redirect_to login_path_for(@user) }
-          format.json { render json: { redirect_location: login_path_for(@user) } }
+        if request.inertia?
+          redirect_to redirect_location
+        else
+          respond_to do |format|
+            format.html { redirect_to redirect_location }
+            format.json { render json: { redirect_location: } }
+          end
         end
       else
-        respond_to do |format|
-          format.html do
-            flash[:alert] = "Invalid token, please try again."
-            redirect_to two_factor_authentication_path
+        error_message = "Invalid token, please try again."
+
+        if request.inertia?
+          redirect_to two_factor_authentication_path, inertia: { errors: { error_message: } }
+        else
+          respond_to do |format|
+            format.html do
+              flash[:alert] = error_message
+              redirect_to two_factor_authentication_path
+            end
+            format.json { render json: { error_message: }, status: :unprocessable_entity }
           end
-          format.json { render json: { error_message: "Invalid token, please try again." }, status: :unprocessable_entity }
         end
       end
     end

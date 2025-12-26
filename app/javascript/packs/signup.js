@@ -3,8 +3,8 @@ import ReactOnRails from "react-on-rails";
 import BasePage from "$app/utils/base_page";
 
 import PasswordResetPage from "$app/components/server-components/PasswordResetPage";
-import TwoFactorAuthenticationPage from "$app/components/server-components/TwoFactorAuthenticationPage";
+import SignupPage from "$app/components/server-components/SignupPage";
 
 BasePage.initialize();
 
-ReactOnRails.default.register({ TwoFactorAuthenticationPage, PasswordResetPage });
+ReactOnRails.default.register({ SignupPage, LoginPage, PasswordResetPage });

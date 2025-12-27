@@ -20,13 +20,15 @@ async function resolvePageComponent(name) {
   try {
     const module = await import(`../pages/${name}.tsx`);
     const page = module.default;
-    page.layout ||= (page) => createElement(Layout, { children: page });
+    const defaultLayout = page.layout || ((page) => createElement(Layout, { children: page }));
+    page.layout = (page) => createElement(AppWrapper, { global: page.props }, defaultLayout(page));
     return page;
   } catch {
     try {
       const module = await import(`../pages/${name}.jsx`);
       const page = module.default;
-      page.layout ||= (page) => createElement(Layout, { children: page });
+      const defaultLayout = page.layout || ((page) => createElement(Layout, { children: page }));
+      page.layout = (page) => createElement(AppWrapper, { global: page.props }, defaultLayout(page));
       return page;
     } catch {
       throw new Error(`Page component not found: ${name}`);
@@ -41,9 +43,7 @@ createInertiaApp({
   setup({ el, App, props }) {
     if (!el) return;
 
-    const global = props.initialPage.props;
-
     const root = createRoot(el);
-    root.render(createElement(AppWrapper, { global }, createElement(App, props)));
+    root.render(createElement(App, props));
   },
 });

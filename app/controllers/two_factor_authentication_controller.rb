@@ -15,7 +15,8 @@ class TwoFactorAuthenticationController < ApplicationController
            props: {
              user_id: @user.encrypted_external_id,
              email: @user.email,
-             token: (User::DEFAULT_AUTH_TOKEN unless Rails.env.production?)
+             token: (User::DEFAULT_AUTH_TOKEN unless Rails.env.production?),
+             hide_nav: true
            }
   end
 
@@ -45,30 +46,10 @@ class TwoFactorAuthenticationController < ApplicationController
         sign_in_with_two_factor_authentication(@user)
 
         flash[:notice] = "Successfully logged in!"
-        redirect_location = login_path_for(@user)
-
-        if request.inertia?
-          redirect_to redirect_location
-        else
-          respond_to do |format|
-            format.html { redirect_to redirect_location }
-            format.json { render json: { redirect_location: } }
-          end
-        end
+        redirect_to login_path_for(@user)
       else
-        error_message = "Invalid token, please try again."
-
-        if request.inertia?
-          redirect_to two_factor_authentication_path, inertia: { errors: { error_message: } }
-        else
-          respond_to do |format|
-            format.html do
-              flash[:alert] = error_message
-              redirect_to two_factor_authentication_path
-            end
-            format.json { render json: { error_message: }, status: :unprocessable_entity }
-          end
-        end
+        flash[:alert] = "Invalid token, please try again."
+        redirect_to two_factor_authentication_path
       end
     end
 
@@ -76,19 +57,11 @@ class TwoFactorAuthenticationController < ApplicationController
       # We require params[:user_id] to be present in the request. This param is used in Rack::Attack to
       # throttle token verification and resend token attempts.
 
-      unless User.find_by_encrypted_external_id(params[:user_id]) == @user
-        respond_to do |format|
-          format.html { e404 }
-          format.json { e404_json }
-        end
-      end
+      e404 unless User.find_by_encrypted_external_id(params[:user_id]) == @user
     end
 
     def redirect_to_signed_in_path
-      respond_to do |format|
-        format.html { redirect_to login_path_for(logged_in_user) }
-        format.json { render json: { success: true, redirect_location: login_path_for(logged_in_user) } }
-      end
+      redirect_to login_path_for(logged_in_user)
     end
 
     def fetch_user
@@ -96,12 +69,7 @@ class TwoFactorAuthenticationController < ApplicationController
     end
 
     def check_presence_of_user
-      if @user.blank?
-        respond_to do |format|
-          format.html { e404 }
-          format.json { e404_json }
-        end
-      end
+      e404 if @user.blank?
     end
 
     def sign_in_with_two_factor_authentication(user)

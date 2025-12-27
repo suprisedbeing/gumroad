@@ -48,7 +48,7 @@ export const resendTwoFactorToken = async (userId: string) => {
   const response = await request({
     method: "POST",
     // Passing user_id in the query string so that Rack::Attack picks it up in params (Rack doesn't parse JSON bodies)
-    url: Routes.resend_authentication_token_path("json", { user_id: userId }),
+    url: `${Routes.resend_authentication_token_path({})}?user_id=${encodeURIComponent(userId)}`,
     accept: "json",
   });
   if (!response.ok) {

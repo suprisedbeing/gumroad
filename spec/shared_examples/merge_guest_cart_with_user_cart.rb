@@ -25,8 +25,12 @@ RSpec.shared_examples_for "merge guest cart with user cart" do
       end.not_to change { Cart.count }
     end.to change { user_cart.reload.alive_cart_products.count }.from(1).to(3)
 
-    expect(response).to be_successful
-    expect(response.parsed_body["redirect_location"]).to eq(expected_redirect_location)
+    if response.redirect?
+      expect(response).to redirect_to(expected_redirect_location)
+    else
+      expect(response).to be_successful
+      expect(response.parsed_body["redirect_location"]).to eq(expected_redirect_location)
+    end
 
     expect(guest_cart.reload.deleted?).to be(true)
     expect(user_cart.reload.deleted?).to be(false)

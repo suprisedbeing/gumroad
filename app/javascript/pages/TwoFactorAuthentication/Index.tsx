@@ -39,10 +39,7 @@ export default function TwoFactorAuthenticationIndex({
           const errorMessage = errors.error_message || "Invalid token, please try again.";
           setLoginState({ type: "error", message: errorMessage });
         },
-        onFinish: () => {
-          // If there's no error, Inertia will handle the redirect automatically
-          // based on the redirect_location from the controller
-        },
+        onFinish: () => {},
       },
     );
   };

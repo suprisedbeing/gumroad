@@ -79,7 +79,7 @@ describe DashboardController, type: :controller, inertia: true do
       let(:follower) { create(:follower, user: seller, confirmed_at: 7.hours.ago) }
 
       before do
-        create(:purchase_event, purchase: create(:purchase, link: product), created_at: Time.current)
+        create(:purchase_event, purchase: create(:free_purchase, link: product), created_at: Time.current)
         follower.update!(confirmed_at: nil, deleted_at: 1.hour.ago)
       end
 
@@ -143,20 +143,23 @@ describe DashboardController, type: :controller, inertia: true do
         create(:product, user: seller)
         create(:workflow, seller:)
         create(:active_follower, user: seller)
-        create(:purchase, :from_seller, seller:)
+        create(:free_purchase, :from_seller, seller:)
         create(:payment_completed, user: seller)
         create(:installment, seller:, send_emails: true)
 
         small_bets_product = create(:product)
-        create(:purchase, purchaser: seller, link: small_bets_product)
+        create(:free_purchase, purchaser: seller, link: small_bets_product)
         stub_const("ENV", ENV.to_hash.merge("SMALL_BETS_PRODUCT_ID" => small_bets_product.id))
       end
 
       it "doesn't render `Getting started` text"  do
         get :index
 
-        expect(response.body).to_not have_text("We're here to help you get paid for your work.")
-        expect(response.body).to_not have_text("Getting started")
+        expect(response).to be_successful
+        expect(inertia).to render_component("Dashboard/Index")
+
+        getting_started_stats = inertia.props[:creator_home][:getting_started_stats]
+        expect(getting_started_stats.values).to all(be_truthy)
       end
     end
 

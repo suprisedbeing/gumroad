@@ -5,6 +5,7 @@ import { classNames } from "$app/utils/classNames";
 
 import { Nav } from "$app/components/client-components/Nav";
 import LoadingSkeleton from "$app/components/LoadingSkeleton";
+import { useLoggedInUser } from "$app/components/LoggedInUser";
 import Alert, { showAlert, type AlertPayload } from "$app/components/server-components/Alert";
 import useRouteLoading from "$app/components/useRouteLoading";
 
@@ -17,6 +18,7 @@ type PageProps = {
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { title, flash, hide_nav } = usePage<PageProps>().props;
   const isRouteLoading = useRouteLoading();
+  const loggedInUser = useLoggedInUser();
 
   React.useEffect(() => {
     if (flash?.message) {

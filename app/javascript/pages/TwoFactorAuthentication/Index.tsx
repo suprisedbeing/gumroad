@@ -8,7 +8,6 @@ import { Layout } from "$app/components/Authentication/Layout";
 import { Button } from "$app/components/Button";
 import { showAlert } from "$app/components/server-components/Alert";
 import { Alert } from "$app/components/ui/Alert";
-import { useOriginalLocation } from "$app/components/useOriginalLocation";
 
 type SaveState = { type: "initial" | "submitting" } | { type: "error"; message: string };
 

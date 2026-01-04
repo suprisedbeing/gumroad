@@ -15,8 +15,7 @@ class TwoFactorAuthenticationController < ApplicationController
            props: {
              user_id: @user.encrypted_external_id,
              email: @user.email,
-             token: (User::DEFAULT_AUTH_TOKEN unless Rails.env.production?),
-             hide_nav: true
+             token: (User::DEFAULT_AUTH_TOKEN unless Rails.env.production?)
            }
   end
 
@@ -45,19 +44,19 @@ class TwoFactorAuthenticationController < ApplicationController
       if @user.token_authenticated?(token)
         sign_in_with_two_factor_authentication(@user)
 
-        flash[:notice] = "Successfully logged in!"
-        redirect_to login_path_for(@user)
+        redirect_to login_path_for(@user), notice: "Successfully logged in!", status: :see_other
       else
-        flash[:alert] = "Invalid token, please try again."
-        redirect_to two_factor_authentication_path
+        redirect_to two_factor_authentication_path, alert: "Invalid token, please try again.", status: :see_other
       end
     end
 
     def validate_user_id_from_params
       # We require params[:user_id] to be present in the request. This param is used in Rack::Attack to
       # throttle token verification and resend token attempts.
-
-      e404 unless User.find_by_encrypted_external_id(params[:user_id]) == @user
+      # e404 raises ActionController::RoutingError which stops execution if user_id doesn't match
+      if User.find_by_encrypted_external_id(params[:user_id]) != @user
+        e404
+      end
     end
 
     def redirect_to_signed_in_path
@@ -69,7 +68,9 @@ class TwoFactorAuthenticationController < ApplicationController
     end
 
     def check_presence_of_user
-      e404 if @user.blank?
+      if @user.blank?
+        e404
+      end
     end
 
     def sign_in_with_two_factor_authentication(user)
